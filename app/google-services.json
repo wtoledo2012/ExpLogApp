@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "311400902152",
+    "project_id": "expenseslog-48120",
+    "storage_bucket": "expenseslog-48120.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:311400902152:android:c60d38828bd71722ecebbd",
+        "android_client_info": {
+          "package_name": "com.wtoledo.explog"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB2K8FcYsWGT1hlRRZcV_f3tPmJlkE0uyw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
