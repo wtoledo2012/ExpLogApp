@@ -25,7 +25,7 @@ class ExpenseViewModel : ViewModel() {
     val expense: LiveData<Expense> = _expense
 
     private val _categories = listOf(
-        Category(1, "Casa", Icons.Filled.Home),
+        Category(1,"Casa", Icons.Filled.Home),
         Category(2,"Alimentación", Icons.Filled.ShoppingCart),
         Category(3,"Ocio", Icons.Filled.Star),
         Category(4,"Transporte", Icons.Filled.LocationOn),
@@ -60,7 +60,7 @@ class ExpenseViewModel : ViewModel() {
     }
 
     fun updateEstablishmentName(name: String) {
-        _expense.value = _expense.value?.copy(establishmentName = name)
+        _expense.value = _expense.value?.copy(localName = name)
     }
 
     fun updateCategory(category: String) {
