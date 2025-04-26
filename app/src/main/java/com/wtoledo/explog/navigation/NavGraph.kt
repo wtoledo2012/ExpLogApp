@@ -13,12 +13,16 @@ import com.wtoledo.explog.viewModels.ExpenseViewModel
 import com.wtoledo.explog.views.ExpenseView
 import com.wtoledo.explog.viewModels.ExpensesListViewModel
 import com.wtoledo.explog.views.ExpensesListView
+import com.wtoledo.explog.viewModels.GraphViewModel
+import com.wtoledo.explog.views.GraphView
+import com.wtoledo.explog.views.HomeView
 
 @Composable
 fun NavGraph(
     navController: NavHostController,
     expenseViewModel: ExpenseViewModel,
     expensesListViewModel: ExpensesListViewModel,
+    graphViewModel: GraphViewModel,
     modifier: Modifier = Modifier) {
     NavHost(navController = navController, startDestination = NavRoutes.EXPENSES_LIST, modifier = modifier) {
         composable(NavRoutes.EXPENSES) {
@@ -28,10 +32,10 @@ fun NavGraph(
             ExpensesListView(expensesListViewModel = expensesListViewModel, navController = navController, expenseViewModel = expenseViewModel)
         }
         composable(NavRoutes.HOME) {
-            CenterText(text = "Home View")
+            HomeView()
         }
         composable(NavRoutes.GRAPH) {
-            CenterText(text = "Graph View")
+            GraphView(graphViewModel = graphViewModel)
         }
     }
 }

@@ -12,11 +12,13 @@ import com.wtoledo.explog.navigation.BottomNavigationBar
 import com.wtoledo.explog.navigation.NavGraph
 import com.wtoledo.explog.viewModels.ExpenseViewModel
 import com.wtoledo.explog.viewModels.ExpensesListViewModel
+import com.wtoledo.explog.viewModels.GraphViewModel
 
 class MainActivity : ComponentActivity() {
 
     private val expensesListViewModel: ExpensesListViewModel by viewModels()
     private val expenseViewModel: ExpenseViewModel by viewModels()
+    private val graphViewModel: GraphViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,6 +32,7 @@ class MainActivity : ComponentActivity() {
                     navController = navController,
                     expenseViewModel = expenseViewModel,
                     expensesListViewModel = expensesListViewModel,
+                    graphViewModel = graphViewModel,
                     modifier = Modifier.padding(padding)
                 )
             }

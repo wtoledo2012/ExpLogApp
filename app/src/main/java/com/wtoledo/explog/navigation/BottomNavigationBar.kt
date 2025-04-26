@@ -10,8 +10,19 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.wtoledo.explog.viewModels.ExpenseViewModel
+import com.wtoledo.explog.viewModels.ExpensesListViewModel
+import com.wtoledo.explog.viewModels.GraphViewModel
+import com.wtoledo.explog.views.ExpenseView
+import com.wtoledo.explog.views.ExpensesListView
+import com.wtoledo.explog.views.GraphView
+import com.wtoledo.explog.views.HomeView
 
 @Composable
 fun BottomNavigationBar(navController: NavController) {
@@ -42,6 +53,29 @@ fun BottomNavigationBar(navController: NavController) {
                     }
                 }
             )
+        }
+    }
+}
+
+@Composable
+fun Navigation(
+    navController: NavHostController,
+    expensesListViewModel: ExpensesListViewModel = viewModel(),
+    expenseViewModel: ExpenseViewModel = viewModel(),
+    graphViewModel: GraphViewModel = viewModel()
+) {
+    NavHost(navController, startDestination = NavRoutes.HOME) {
+        composable(NavRoutes.HOME) {
+            HomeView()
+        }
+        composable(NavRoutes.EXPENSES_LIST) {
+            ExpensesListView(expensesListViewModel, navController, expenseViewModel)
+        }
+        composable(NavRoutes.EXPENSES) {
+            ExpenseView(expenseViewModel, navController)
+        }
+        composable(NavRoutes.GRAPH) {
+            GraphView(graphViewModel)
         }
     }
 }
