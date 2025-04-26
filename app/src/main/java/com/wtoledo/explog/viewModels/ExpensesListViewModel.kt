@@ -8,8 +8,11 @@ import androidx.lifecycle.viewModelScope
 import com.google.firebase.firestore.CollectionReference
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
-import com.google.firebase.firestore.ktx.toObjects
+import com.google.firebase.firestore.ktx.dataObjects
 import com.wtoledo.explog.models.Expense
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
@@ -33,20 +36,20 @@ class ExpensesListViewModel : ViewModel() {
 
     private fun loadExpenses() {
         _isLoading.value = true
-        viewModelScope.launch {
-            try {
-                val querySnapshot = expensesRef.orderBy("date", Query.Direction.DESCENDING).get().await()
-                val expenseList = querySnapshot.toObjects<Expense>()
+        expensesRef.orderBy("date", Query.Direction.DESCENDING)
+            .dataObjects<Expense>()
+            .catch { exception ->
+                Log.e("ExpensesListViewModel", "Error loading expenses", exception)
+                _errorMessage.postValue("Error loading expenses: ${exception.localizedMessage}")
+            }
+            .onEach { expenseList ->
                 _expenses.postValue(expenseList)
                 _errorMessage.postValue(null)
-            } catch (e: Exception) {
-                Log.e("ExpensesListViewModel", "Error loading expenses", e)
-                _errorMessage.postValue("Error loading expenses: ${e.localizedMessage}")
-            } finally {
-                _isLoading.postValue(false)
             }
-        }
+            .launchIn(viewModelScope)
+        _isLoading.postValue(false)
     }
+
     fun deleteExpense(expense: Expense) {
         viewModelScope.launch {
             try {

@@ -10,12 +10,13 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
 import com.wtoledo.explog.navigation.BottomNavigationBar
 import com.wtoledo.explog.navigation.NavGraph
+import com.wtoledo.explog.viewModels.ExpenseViewModel
 import com.wtoledo.explog.viewModels.ExpensesListViewModel
 
 class MainActivity : ComponentActivity() {
 
     private val expensesListViewModel: ExpensesListViewModel by viewModels()
-    //private val expenseViewModel: ExpenseViewModel by viewModels()
+    private val expenseViewModel: ExpenseViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,6 +28,7 @@ class MainActivity : ComponentActivity() {
             ) { padding ->
                 NavGraph(
                     navController = navController,
+                    expenseViewModel = expenseViewModel,
                     expensesListViewModel = expensesListViewModel,
                     modifier = Modifier.padding(padding)
                 )

@@ -9,14 +9,23 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.wtoledo.explog.viewModels.ExpenseViewModel
+import com.wtoledo.explog.views.ExpenseView
 import com.wtoledo.explog.viewModels.ExpensesListViewModel
 import com.wtoledo.explog.views.ExpensesListView
 
 @Composable
-fun NavGraph(navController: NavHostController, expensesListViewModel: ExpensesListViewModel, modifier: Modifier = Modifier) {
+fun NavGraph(
+    navController: NavHostController,
+    expenseViewModel: ExpenseViewModel,
+    expensesListViewModel: ExpensesListViewModel,
+    modifier: Modifier = Modifier) {
     NavHost(navController = navController, startDestination = NavRoutes.EXPENSES_LIST, modifier = modifier) {
+        composable(NavRoutes.EXPENSES) {
+            ExpenseView(expenseViewModel = expenseViewModel , navController = navController)
+        }
         composable(NavRoutes.EXPENSES_LIST) {
-            ExpensesListView(expensesListViewModel = expensesListViewModel)
+            ExpensesListView(expensesListViewModel = expensesListViewModel, navController = navController, expenseViewModel = expenseViewModel)
         }
         composable(NavRoutes.HOME) {
             CenterText(text = "Home View")

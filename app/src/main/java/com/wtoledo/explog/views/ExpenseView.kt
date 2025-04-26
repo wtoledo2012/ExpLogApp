@@ -8,6 +8,7 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material3.*
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.*
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -19,16 +20,19 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.wtoledo.explog.viewModels.ExpenseViewModel
 import androidx.compose.material3.rememberDatePickerState
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import com.wtoledo.explog.models.Category
+import androidx.navigation.NavController
+import com.wtoledo.explog.navigation.NavRoutes
 import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ExpenseView(expenseViewModel: ExpenseViewModel) {
+fun ExpenseView(expenseViewModel: ExpenseViewModel, navController: NavController) {
     val expense by expenseViewModel.expense.observeAsState()
     val categories = expenseViewModel.categories
 
@@ -46,7 +50,7 @@ fun ExpenseView(expenseViewModel: ExpenseViewModel) {
             )
             delay(5000L)
             expenseViewModel.resetIsSaveSuccessful()
-        } else if (isSaveSuccessful == false){
+        } else if (isSaveSuccessful == false) {
             snackbarHostState.showSnackbar(
                 message = "Error al guardar el gasto.",
                 duration = SnackbarDuration.Short
@@ -57,68 +61,51 @@ fun ExpenseView(expenseViewModel: ExpenseViewModel) {
     }
 
     Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Registro de Pago") },
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
+                    }
+                }
+            )
+        },
         snackbarHost = { SnackbarHost(snackbarHostState) },
         content = { padding ->
 
             Column(
                 modifier = Modifier
                     .fillMaxSize()
+                    .padding(padding)
                     .padding(16.dp),
                 horizontalAlignment = Alignment.Start
             ) {
-                Text(
-                    text = "Registro de Pago",
-                    style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
-                    modifier = Modifier.padding(bottom = 16.dp)
-                )
-
                 Column(
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text(
-                        text = "Descripción",
-                        style = MaterialTheme.typography.bodyLarge,
-                        modifier = Modifier.align(Alignment.Start)
-                    )
                     OutlinedTextField(
                         value = expense?.description ?: "",
                         onValueChange = {
-                            //description = it
                             expenseViewModel.updateDescription(it)
                         },
-                        //label = { Text("Descripción") },
+                        label = { Text("Descripción") },
                         modifier = Modifier.fillMaxWidth()
-                    )
-
-                    Text(
-                        text = "Monto",
-                        style = MaterialTheme.typography.bodyLarge,
-                        modifier = Modifier.align(Alignment.Start)
                     )
                     OutlinedTextField(
                         value = expense?.amount?.toString() ?: "",
                         onValueChange = {
-                            //amount = it
                             expenseViewModel.updateAmount(it.toDoubleOrNull() ?: 0.0)
                         },
-                        //label = { Text("Amount") },
+                        label = { Text("Monto") },
                         modifier = Modifier.fillMaxWidth()
-                    )
-
-                    Text(
-                        text = "Fecha (YYYY-MM-DD)",
-                        style = MaterialTheme.typography.bodyLarge,
-                        modifier = Modifier.align(Alignment.Start)
                     )
                     OutlinedTextField(
                         value = expense?.date ?: "",
-                        onValueChange = {
-                            //date = it
-                            //expenseViewModel.updateDate(it)
-                        },
-                        //label = { Text("Date (YYYY-MM-DD)") },
+                        onValueChange = { },
+                        label = { Text("Fecha (YYYY-MM-DD)") },
                         readOnly = true,
                         modifier = Modifier.fillMaxWidth(),
                         trailingIcon = {
@@ -127,22 +114,14 @@ fun ExpenseView(expenseViewModel: ExpenseViewModel) {
                             }
                         }
                     )
-
-                    Text(
-                        text = "Local",
-                        style = MaterialTheme.typography.bodyLarge,
-                        modifier = Modifier.align(Alignment.Start)
-                    )
                     OutlinedTextField(
                         value = expense?.localName ?: "",
                         onValueChange = {
-                            //establishmentName = it
                             expenseViewModel.updateEstablishmentName(it)
                         },
-                        //label = { Text("Establishment Name") },
+                        label = { Text("Local") },
                         modifier = Modifier.fillMaxWidth()
                     )
-
                     Text(
                         text = "Categoría",
                         style = MaterialTheme.typography.bodyLarge,
@@ -150,7 +129,9 @@ fun ExpenseView(expenseViewModel: ExpenseViewModel) {
                     )
                     LazyVerticalGrid(
                         columns = GridCells.Fixed(4),
-                        modifier = Modifier.fillMaxWidth().height(200.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(200.dp),
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
@@ -159,7 +140,6 @@ fun ExpenseView(expenseViewModel: ExpenseViewModel) {
                                 category = categoryItem,
                                 isSelected = expense?.categoryId == categoryItem.id,
                                 onSelect = {
-                                    //category = it.name
                                     expenseViewModel.updateCategory(it.name)
                                 }
                             )
@@ -189,7 +169,6 @@ fun ExpenseView(expenseViewModel: ExpenseViewModel) {
                                             ).format(Date(it))
                                         } ?: ""
                                         expenseViewModel.updateDate(selectedDate)
-                                        //date = selectedDate
                                     }
                                 ) {
                                     Text("OK")
@@ -221,7 +200,9 @@ fun CategoryIcon(category: Category, isSelected: Boolean, onSelect: (Category) -
         ),
     ) {
         Column(
-            modifier = Modifier.fillMaxSize().padding(8.dp),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(8.dp),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -241,14 +222,16 @@ fun CategoryIcon(category: Category, isSelected: Boolean, onSelect: (Category) -
     }
 }
 
+/*
 @Preview(showBackground = true)
 @Composable
 fun ExpenseViewPreview() {
     val previewViewModel = ExpenseViewModel()
+    val navController = NavController()
 
     MaterialTheme {
         Surface {
             ExpenseView(expenseViewModel = previewViewModel)
         }
     }
-}
+}*/
