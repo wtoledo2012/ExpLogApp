@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
 import com.wtoledo.explog.navigation.BottomNavigationBar
 import com.wtoledo.explog.navigation.NavGraph
+import com.wtoledo.explog.ui.theme.ExpLogTheme
 import com.wtoledo.explog.viewModels.ExpenseViewModel
 import com.wtoledo.explog.viewModels.ExpensesListViewModel
 import com.wtoledo.explog.viewModels.GraphViewModel
@@ -23,18 +24,20 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            //ExpenseView(expenseViewModel = expenseViewModel)
-            val navController = rememberNavController()
-            Scaffold(
-                bottomBar = { BottomNavigationBar(navController = navController) }
-            ) { padding ->
-                NavGraph(
-                    navController = navController,
-                    expenseViewModel = expenseViewModel,
-                    expensesListViewModel = expensesListViewModel,
-                    graphViewModel = graphViewModel,
-                    modifier = Modifier.padding(padding)
-                )
+            ExpLogTheme {
+                //ExpenseView(expenseViewModel = expenseViewModel)
+                val navController = rememberNavController()
+                Scaffold(
+                    bottomBar = { BottomNavigationBar(navController = navController) }
+                ) { padding ->
+                    NavGraph(
+                        navController = navController,
+                        expenseViewModel = expenseViewModel,
+                        expensesListViewModel = expensesListViewModel,
+                        graphViewModel = graphViewModel,
+                        modifier = Modifier.padding(padding)
+                    )
+                }
             }
         }
     }

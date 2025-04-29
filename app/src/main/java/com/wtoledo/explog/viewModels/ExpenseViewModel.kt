@@ -29,22 +29,48 @@ class ExpenseViewModel : ViewModel() {
 
     private val db = Firebase.firestore
     private val expensesRef: CollectionReference = db.collection("expense")
+    private val categoriesRef: CollectionReference = db.collection("categories")
 
-    private val _categories = listOf(
-        Category(1,"Casa", Icons.Filled.Home),
-        Category(2,"Comida", Icons.Filled.ShoppingCart),
-        Category(3,"Ocio", Icons.Filled.Star),
-        Category(4,"Transporte", Icons.Filled.LocationOn),
-        Category(5,"Serv. Bás.", Icons.Filled.Settings),
-        Category(6,"Vida y Salud", Icons.Filled.Favorite),
-        Category(7,"Ropa", Icons.Filled.AccountBox),
-        Category(8,"Otros", Icons.Filled.Favorite)
-    )
-    val categories: List<Category> = _categories
+    private val _categories = MutableLiveData<List<Category>>(emptyList())
+    val categories: LiveData<List<Category>> = _categories
+
+    private val _isLoadingCategories = MutableLiveData<Boolean>(true)
+    val isLoadingCategories: LiveData<Boolean> = _isLoadingCategories
+
+    private val _categoriesLoadError = MutableLiveData<String?>(null)
+    val categoriesLoadError: LiveData<String?> = _categoriesLoadError
 
     init {
         _expense.value = Expense()
         _isSaveSuccessful.value = null
+        loadCategories()
+    }
+
+    private fun loadCategories() {
+        viewModelScope.launch(Dispatchers.IO) {
+            _isLoadingCategories.postValue(true)
+            try {
+                val querySnapshot = categoriesRef.get().await()
+                val categories = querySnapshot.documents.mapNotNull { document ->
+                    val id = document.getLong("id")?.toInt()
+                    val name = document.getString("name")
+                    val icon = document.getString("icon")
+
+                    if (id != null && name != null && icon != null) {
+                        Category(id, name, icon)
+                    } else {
+                        null
+                    }
+                }
+                _categories.postValue(categories)
+                _categoriesLoadError.postValue(null)
+            } catch (e: Exception) {
+                Log.e("ExpenseViewModel", "Error loading categories", e)
+                _categoriesLoadError.postValue("Error al cargar categorías")
+            } finally {
+                _isLoadingCategories.postValue(false)
+            }
+        }
     }
 
     fun updateDescription(description: String) {
@@ -72,10 +98,8 @@ class ExpenseViewModel : ViewModel() {
     }
 
     fun updateCategory(category: String) {
-        val selectedCategory = _categories.find { it.name == category }
+        val selectedCategory = _categories.value?.find { it.name == category }
         _expense.value = _expense.value?.copy(categoryId = selectedCategory?.id ?: 0)
-        //validateForm()
-        //_isFormTouched.value = true
     }
 
     fun saveExpense() {
@@ -105,7 +129,7 @@ class ExpenseViewModel : ViewModel() {
     }
 
     fun getCategoryById(categoryId: Int): Category? {
-        return _categories.find { it.id == categoryId }
+        return _categories.value?.find { it.id == categoryId }
     }
 
     override fun onCleared() {

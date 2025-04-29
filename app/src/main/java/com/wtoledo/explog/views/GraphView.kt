@@ -33,6 +33,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -42,6 +43,7 @@ import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.min
 import kotlin.math.sin
+import com.wtoledo.explog.ui.theme.pastelColors
 
 @Composable
 fun GraphView(graphViewModel: GraphViewModel) {
@@ -64,23 +66,29 @@ fun GraphView(graphViewModel: GraphViewModel) {
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
 
-                if (isLoading) {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        CircularProgressIndicator()
+                when {
+                    isLoading -> {
+                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                            CircularProgressIndicator()
+                        }
                     }
-                } else if (errorMessage != null) {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Text(text = errorMessage ?: "Unknown error")
+
+                    errorMessage != null -> {
+                        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                            Text(text = errorMessage ?: "Unknown error")
+                        }
                     }
-                } else {
-                    PieChart(
-                        data = categoryExpenses,
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .weight(1f)
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                    CategoryExpenseTable(categoryExpenses = categoryExpenses)
+
+                    else -> {
+                        PieChart(
+                            data = categoryExpenses,
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .weight(1f)
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        CategoryExpenseTable(categoryExpenses = categoryExpenses)
+                    }
                 }
             }
         }
@@ -91,7 +99,7 @@ fun GraphView(graphViewModel: GraphViewModel) {
 fun CategoryExpenseTable(categoryExpenses: List<CategoryExpense>) {
     Column(
         modifier = Modifier
-            .fillMaxWidth()
+            //.fillMaxWidth()
             .padding(horizontal = 16.dp)
     ) {
         Row(
@@ -106,7 +114,8 @@ fun CategoryExpenseTable(categoryExpenses: List<CategoryExpense>) {
                     .weight(1f)
                     .padding(8.dp),
                 style = MaterialTheme.typography.bodyMedium,
-                textAlign = TextAlign.Start
+                textAlign = TextAlign.Start,
+                fontWeight = FontWeight.ExtraBold
             )
             Text(
                 text = "Total",
@@ -114,7 +123,8 @@ fun CategoryExpenseTable(categoryExpenses: List<CategoryExpense>) {
                     .width(100.dp)
                     .padding(8.dp),
                 style = MaterialTheme.typography.bodyMedium,
-                textAlign = TextAlign.End
+                textAlign = TextAlign.End,
+                fontWeight = FontWeight.ExtraBold
             )
         }
         // Table Rows
@@ -158,16 +168,6 @@ fun CategoryExpenseItem(categoryExpense: CategoryExpense) {
 fun PieChart(data: List<CategoryExpense>, modifier: Modifier = Modifier) {
     val total = data.sumOf { it.totalAmount }
     val normalizedData = data.map { it.totalAmount / total }
-    val pastelColors = listOf(
-        Color(0xFFE0BBE4), // Light Purple
-        Color(0xFF957DAD), // Medium Purple
-        Color(0xFFD291BC), // Pink
-        Color(0xFFFFDFD3), // Peach
-        Color(0xFFFFC8A2), // Light Orange
-        Color(0xFFE1D4BB), // Beige
-        Color(0xFFC6EBC5), // Light Green
-        Color(0xFFB4CFB0) // Mint Green
-    )
     val startAngles = mutableListOf<Float>()
     var currentAngle = 0f
     normalizedData.forEach { percentage ->
@@ -251,7 +251,7 @@ private fun DrawScope.drawTooltip(
     val tooltipY = center.y - tooltipRadius * sin(midAngleRad).toFloat()
     val tooltipOffset = Offset(tooltipX, tooltipY)
     val text = categoryName
-    val textSize = 10.dp.toPx()
+    var textSize = 10.dp.toPx()
     val textPaint = android.graphics.Paint().apply {
         color = android.graphics.Color.BLACK
         textSize = this@drawTooltip.size.minDimension / textSize

@@ -34,7 +34,7 @@ import kotlinx.coroutines.delay
 @Composable
 fun ExpenseView(expenseViewModel: ExpenseViewModel, navController: NavController) {
     val expense by expenseViewModel.expense.observeAsState()
-    val categories = expenseViewModel.categories
+    val categories = expenseViewModel.categories.observeAsState(initial = emptyList())
 
     var showDatePickerDialog by remember { mutableStateOf(false) }
     val datePickerState = rememberDatePickerState()
@@ -135,7 +135,7 @@ fun ExpenseView(expenseViewModel: ExpenseViewModel, navController: NavController
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        items(categories) { categoryItem ->
+                        items(categories.value) { categoryItem ->
                             CategoryIcon(
                                 category = categoryItem,
                                 isSelected = expense?.categoryId == categoryItem.id,
@@ -207,7 +207,7 @@ fun CategoryIcon(category: Category, isSelected: Boolean, onSelect: (Category) -
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Icon(
-                imageVector = category.icon,
+                imageVector = category.getImageVector(),
                 contentDescription = category.name,
                 tint = if (isSelected) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.size(32.dp)

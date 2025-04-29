@@ -105,7 +105,7 @@ fun ExpenseItem(
                         .wrapContentSize(Alignment.Center) // Center the icon inside the box
                 ) {
                     Icon(
-                        imageVector = category.icon,
+                        imageVector = category.getImageVector(),
                         contentDescription = category.name,
                         modifier = Modifier.size(24.dp) // Icon size inside the box
                     )

@@ -1,9 +1,30 @@
 package com.wtoledo.explog.models
 
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountBox
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.ui.graphics.vector.ImageVector
 
 data class Category(
     val id: Int,
     val name: String,
-    val icon: ImageVector
-)
+    val icon: String
+){
+    fun getImageVector(): ImageVector {
+        return when (icon) {
+            "Home" -> Icons.Filled.Home
+            "ShoppingCart" -> Icons.Filled.ShoppingCart
+            "Star" -> Icons.Filled.Star
+            "LocationOn" -> Icons.Filled.LocationOn
+            "Settings" -> Icons.Filled.Settings
+            "Favorite" -> Icons.Filled.Favorite
+            "AccountBox" -> Icons.Filled.AccountBox
+            else -> Icons.Filled.Favorite
+        }
+    }
+}

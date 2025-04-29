@@ -56,7 +56,7 @@ fun BottomNavigationBar(navController: NavController) {
         }
     }
 }
-
+/*
 @Composable
 fun Navigation(
     navController: NavHostController,
@@ -78,4 +78,4 @@ fun Navigation(
             GraphView(graphViewModel)
         }
     }
-}
+}*/
