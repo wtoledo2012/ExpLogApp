@@ -88,7 +88,6 @@ class GraphViewModel : ViewModel() {
     }
 
     private fun loadExpensesWithTimeout(): Flow<Pair<List<Expense>, List<Category>>?> = flow {
-        // Use withTimeoutOrNull to add a timeout for the entire operation
         val result: Pair<List<Expense>, List<Category>>? = withTimeoutOrNull(5000) {
             combine(
                 getExpensesFlow(),
@@ -104,9 +103,7 @@ class GraphViewModel : ViewModel() {
     }
 
     private fun getExpensesFlow(): Flow<List<Expense>> = expensesRef.dataObjects<Expense>()
-        .onStart {
-            // Optional: Emit something at the beginning (e.g., loading state)
-        }
+        .onStart {}
         .catch { exception ->
             Log.e("GraphViewModel", "Error loading expenses", exception)
         }

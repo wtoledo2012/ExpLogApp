@@ -75,26 +75,18 @@ class ExpenseViewModel : ViewModel() {
 
     fun updateDescription(description: String) {
         _expense.value = _expense.value?.copy(description = description)
-        //validateForm()
-        //_isFormTouched.value = true
     }
 
     fun updateAmount(amount: Double) {
         _expense.value = _expense.value?.copy(amount = amount)
-        //validateForm()
-        //_isFormTouched.value = true
     }
 
     fun updateDate(date: String) {
         _expense.value = _expense.value?.copy(date = date)
-        //validateForm()
-        //_isFormTouched.value = true
     }
 
     fun updateEstablishmentName(name: String) {
         _expense.value = _expense.value?.copy(localName = name)
-        //validateForm()
-        //_isFormTouched.value = true
     }
 
     fun updateCategory(category: String) {
@@ -103,7 +95,6 @@ class ExpenseViewModel : ViewModel() {
     }
 
     fun saveExpense() {
-        //if (_isFormValid.value == true) {
             val expenseToSave = _expense.value
             if (expenseToSave != null) {
                 viewModelScope.launch(Dispatchers.IO) {
@@ -112,16 +103,12 @@ class ExpenseViewModel : ViewModel() {
                         Log.d("ExpenseViewModel", "Expense saved successfully with ID: ${documentReference.id}")
                         _expense.postValue(Expense())
                         _isSaveSuccessful.postValue(true)
-                        //_isFormTouched.postValue(false)
                     } catch (e: Exception) {
                         Log.e("ExpenseViewModel", "Error saving expense", e)
                         _isSaveSuccessful.postValue(false)
                     }
                 }
             }
-        //} else {
-        //   _isSaveSuccessful.postValue(false)
-        // }
     }
 
     fun resetIsSaveSuccessful(){
@@ -136,19 +123,4 @@ class ExpenseViewModel : ViewModel() {
         super.onCleared()
         _isSaveSuccessful.value = false
     }
-
-    /*private fun validateForm() {
-        //if (_isFormTouched.value == true) {
-            val currentExpense = _expense.value ?: return
-            _isFormValid.value = currentExpense.description.isNotBlank() &&
-                    currentExpense.amount != null &&
-                    currentExpense.amount != 0.0 &&
-                    currentExpense.date.isNotBlank() &&
-                    currentExpense.localName.isNotBlank() &&
-                    currentExpense.categoryId != null &&
-                    currentExpense.categoryId != 0
-        //}else{
-        //     _isFormValid.value = false
-        //}
-    }*/
 }

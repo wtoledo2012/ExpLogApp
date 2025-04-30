@@ -56,26 +56,3 @@ fun BottomNavigationBar(navController: NavController) {
         }
     }
 }
-/*
-@Composable
-fun Navigation(
-    navController: NavHostController,
-    expensesListViewModel: ExpensesListViewModel = viewModel(),
-    expenseViewModel: ExpenseViewModel = viewModel(),
-    graphViewModel: GraphViewModel = viewModel()
-) {
-    NavHost(navController, startDestination = NavRoutes.HOME) {
-        composable(NavRoutes.HOME) {
-            HomeView()
-        }
-        composable(NavRoutes.EXPENSES_LIST) {
-            ExpensesListView(expensesListViewModel, navController, expenseViewModel)
-        }
-        composable(NavRoutes.EXPENSES) {
-            ExpenseView(expenseViewModel, navController)
-        }
-        composable(NavRoutes.GRAPH) {
-            GraphView(graphViewModel)
-        }
-    }
-}*/
