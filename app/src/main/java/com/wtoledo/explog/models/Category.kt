@@ -2,8 +2,12 @@ package com.wtoledo.explog.models
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountBox
+import androidx.compose.material.icons.filled.Checkroom
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.HealthAndSafety
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Lightbulb
+import androidx.compose.material.icons.filled.LocalTaxi
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.ShoppingCart
@@ -24,6 +28,10 @@ data class Category(
             "Settings" -> Icons.Filled.Settings
             "Favorite" -> Icons.Filled.Favorite
             "AccountBox" -> Icons.Filled.AccountBox
+            "Clothes" -> Icons.Filled.Checkroom
+            "BasServ" -> Icons.Filled.Lightbulb
+            "Transport" -> Icons.Filled.LocalTaxi
+            "Health" -> Icons.Filled.HealthAndSafety
             else -> Icons.Filled.Favorite
         }
     }

@@ -151,7 +151,7 @@ fun ExpenseView(expenseViewModel: ExpenseViewModel, navController: NavController
                         .padding(top = 24.dp)
                         .fillMaxWidth()
                 ) {
-                    Text("Save")
+                    Text("Guardar")
                 }
 
                 if (showDatePickerDialog) {
