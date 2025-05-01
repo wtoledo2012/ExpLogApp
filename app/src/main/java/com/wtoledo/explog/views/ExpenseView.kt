@@ -130,7 +130,7 @@ fun ExpenseView(expenseViewModel: ExpenseViewModel, navController: NavController
                         columns = GridCells.Fixed(4),
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(200.dp),
+                            .height(100.dp),
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
@@ -192,7 +192,7 @@ fun ExpenseView(expenseViewModel: ExpenseViewModel, navController: NavController
 fun CategoryIcon(category: Category, isSelected: Boolean, onSelect: (Category) -> Unit) {
     Card(
         modifier = Modifier
-            .size(90.dp)
+            .size(45.dp)
             .clickable { onSelect(category) },
         colors = CardDefaults.cardColors(
             containerColor = if (isSelected) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant
@@ -201,7 +201,7 @@ fun CategoryIcon(category: Category, isSelected: Boolean, onSelect: (Category) -
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(8.dp),
+                .padding(3.dp),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -209,7 +209,7 @@ fun CategoryIcon(category: Category, isSelected: Boolean, onSelect: (Category) -
                 imageVector = category.getImageVector(),
                 contentDescription = category.name,
                 tint = if (isSelected) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.size(32.dp)
+                modifier = Modifier.size(16.dp)
             )
             Text(
                 text = category.name,
