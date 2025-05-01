@@ -27,9 +27,9 @@ import com.wtoledo.explog.views.HomeView
 @Composable
 fun BottomNavigationBar(navController: NavController) {
     val items = listOf(
-        BottomNavigationItem("Gastos", Icons.Filled.Menu, NavRoutes.EXPENSES_LIST),
-        BottomNavigationItem("Inicio", Icons.Filled.Home, NavRoutes.HOME),
-        BottomNavigationItem("Gráfico", Icons.Filled.Place, NavRoutes.GRAPH)
+        BottomNavigationItem("Gastos", Icons.Filled.Menu, NavRoutes.EXPENSES_LIST.route),
+        BottomNavigationItem("Inicio", Icons.Filled.Home, NavRoutes.HOME.route),
+        BottomNavigationItem("Gráfico", Icons.Filled.Place, NavRoutes.GRAPH.route)
     )
 
     NavigationBar {

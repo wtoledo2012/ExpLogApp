@@ -24,17 +24,17 @@ fun NavGraph(
     expensesListViewModel: ExpensesListViewModel,
     graphViewModel: GraphViewModel,
     modifier: Modifier = Modifier) {
-    NavHost(navController = navController, startDestination = NavRoutes.EXPENSES_LIST, modifier = modifier) {
-        composable(NavRoutes.EXPENSES) {
+    NavHost(navController = navController, startDestination = NavRoutes.HOME.route, modifier = modifier) {
+        composable(NavRoutes.EXPENSES.route) {
             ExpenseView(expenseViewModel = expenseViewModel , navController = navController)
         }
-        composable(NavRoutes.EXPENSES_LIST) {
+        composable(NavRoutes.EXPENSES_LIST.route) {
             ExpensesListView(expensesListViewModel = expensesListViewModel, navController = navController, expenseViewModel = expenseViewModel)
         }
-        composable(NavRoutes.HOME) {
+        composable(NavRoutes.HOME.route) {
             HomeView()
         }
-        composable(NavRoutes.GRAPH) {
+        composable(NavRoutes.GRAPH.route) {
             GraphView(graphViewModel = graphViewModel)
         }
     }

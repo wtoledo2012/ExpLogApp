@@ -32,7 +32,7 @@ fun ExpensesListView(
 
     Scaffold(
         floatingActionButton = {
-            FloatingActionButton(onClick = { navController.navigate(NavRoutes.EXPENSES) }) {
+            FloatingActionButton(onClick = { navController.navigate(NavRoutes.EXPENSES.route) }) {
                 Icon(Icons.Filled.Add, "Agregar Gasto")
             }
         },
