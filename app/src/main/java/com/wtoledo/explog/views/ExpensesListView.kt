@@ -100,13 +100,13 @@ fun ExpenseItem(
             if (category != null) {
                 Box(
                     modifier = Modifier
-                        .size(48.dp) // Increase the size of the box
-                        .wrapContentSize(Alignment.Center) // Center the icon inside the box
+                        .size(48.dp)
+                        .wrapContentSize(Alignment.Center)
                 ) {
                     Icon(
                         imageVector = category.getImageVector(),
                         contentDescription = category.name,
-                        modifier = Modifier.size(24.dp) // Icon size inside the box
+                        modifier = Modifier.size(24.dp)
                     )
                 }
             }
@@ -120,8 +120,8 @@ fun ExpenseItem(
             Spacer(modifier = Modifier.width(8.dp))
             Box(
                 modifier = Modifier
-                    .size(48.dp) // Increase the size of the box
-                    .wrapContentSize(Alignment.Center) // Center the icon inside the box
+                    .size(48.dp)
+                    .wrapContentSize(Alignment.Center)
             ) {
                 Text(text = "$${expense.amount}", style = MaterialTheme.typography.bodyMedium)
             }

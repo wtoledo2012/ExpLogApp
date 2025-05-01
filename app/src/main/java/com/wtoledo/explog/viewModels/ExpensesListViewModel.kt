@@ -65,8 +65,6 @@ class ExpensesListViewModel : ViewModel() {
                 for (document in querySnapshot.documents) {
                     expensesRef.document(document.id).delete().await()
                 }
-
-                // Refresh the list after deletion
                 loadExpenses()
             } catch (e: Exception) {
                 Log.e("ExpensesListViewModel", "Error deleting expense", e)

@@ -73,7 +73,6 @@ fun ExpenseView(expenseViewModel: ExpenseViewModel, navController: NavController
         },
         snackbarHost = { SnackbarHost(snackbarHostState) },
         content = { padding ->
-
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -84,7 +83,7 @@ fun ExpenseView(expenseViewModel: ExpenseViewModel, navController: NavController
                 Column(
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth().weight(1f)
                 ) {
                     OutlinedTextField(
                         value = expense?.description ?: "",
@@ -145,46 +144,46 @@ fun ExpenseView(expenseViewModel: ExpenseViewModel, navController: NavController
                             )
                         }
                     }
+                }// aqui
+                Button(
+                    onClick = { expenseViewModel.saveExpense() },
+                    modifier = Modifier
+                        .padding(top = 24.dp)
+                        .fillMaxWidth()
+                ) {
+                    Text("Save")
+                }
 
-                    Button(
-                        onClick = { expenseViewModel.saveExpense() },
-                        modifier = Modifier
-                            .padding(top = 24.dp)
-                            .fillMaxWidth()
-                    ) {
-                        Text("Save")
-                    }
-
-                    if (showDatePickerDialog) {
-                        DatePickerDialog(
-                            onDismissRequest = { showDatePickerDialog = false },
-                            confirmButton = {
-                                TextButton(
-                                    onClick = {
-                                        showDatePickerDialog = false
-                                        val selectedDate = datePickerState.selectedDateMillis?.let {
-                                            SimpleDateFormat(
-                                                "yyyy-MM-dd",
-                                                Locale.getDefault()
-                                            ).format(Date(it))
-                                        } ?: ""
-                                        expenseViewModel.updateDate(selectedDate)
-                                    }
-                                ) {
-                                    Text("OK")
+                if (showDatePickerDialog) {
+                    DatePickerDialog(
+                        onDismissRequest = { showDatePickerDialog = false },
+                        confirmButton = {
+                            TextButton(
+                                onClick = {
+                                    showDatePickerDialog = false
+                                    val selectedDate = datePickerState.selectedDateMillis?.let {
+                                        SimpleDateFormat(
+                                            "yyyy-MM-dd",
+                                            Locale.getDefault()
+                                        ).format(Date(it))
+                                    } ?: ""
+                                    expenseViewModel.updateDate(selectedDate)
                                 }
-                            },
-                            dismissButton = {
-                                TextButton(onClick = { showDatePickerDialog = false }) {
-                                    Text("Cancel")
-                                }
+                            ) {
+                                Text("OK")
                             }
-                        ) {
-                            DatePicker(state = datePickerState)
+                        },
+                        dismissButton = {
+                            TextButton(onClick = { showDatePickerDialog = false }) {
+                                Text("Cancel")
+                            }
                         }
+                    ) {
+                        DatePicker(state = datePickerState)
                     }
                 }
             }
+            //} antes
         }
     ) // Cierre del Scaffold
 }
