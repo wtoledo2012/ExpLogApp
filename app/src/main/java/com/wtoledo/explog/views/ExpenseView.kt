@@ -5,29 +5,31 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.icons.Icons
 import androidx.compose.material3.*
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.CropFree
 import androidx.compose.runtime.*
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.wtoledo.explog.viewModels.ExpenseViewModel
 import androidx.compose.material3.rememberDatePickerState
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.unit.sp
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 import com.wtoledo.explog.models.Category
 import androidx.navigation.NavController
-import com.wtoledo.explog.navigation.NavRoutes
 import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -64,11 +66,33 @@ fun ExpenseView(expenseViewModel: ExpenseViewModel, navController: NavController
         topBar = {
             TopAppBar(
                 title = { Text("Registro de Pago") },
-                navigationIcon = {
+                actions = {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        IconButton(onClick = { navController.popBackStack() }) {
+                            Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
+                        }
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Button(onClick = {
+                            println("Botón 'Scan' clickeado")
+                        },
+                            modifier = Modifier.height(40.dp)) {
+                            Icon(
+                                imageVector = Icons.Filled.CropFree,
+                                contentDescription = "Scan"
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(text = "Scan")
+                        }
+                    }
+                }
+                /*navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
                     }
-                }
+                }*/
+
             )
         },
         snackbarHost = { SnackbarHost(snackbarHostState) },
@@ -144,7 +168,7 @@ fun ExpenseView(expenseViewModel: ExpenseViewModel, navController: NavController
                             )
                         }
                     }
-                }// aqui
+                }
                 Button(
                     onClick = { expenseViewModel.saveExpense() },
                     modifier = Modifier
