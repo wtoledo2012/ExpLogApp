@@ -1,7 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.crashlytics)
-    alias(libs.plugins.googleServices)
+    alias(libs.plugins.google.services)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
 }
@@ -64,7 +64,15 @@ dependencies {
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.database)
+    implementation(libs.firebase.crashlytics)
     implementation(libs.firebase.auth)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.material.icons.extended)
+    implementation(libs.mlkit.text.recognition)
+    implementation(libs.androidx.camera.core)
+    implementation(libs.androidx.camera.camera2)
+    implementation(libs.androidx.camera.lifecycle)
+    implementation(libs.androidx.camera.view)
+    implementation(libs.concurrent.futures)
+    implementation(libs.google.guava)
 }

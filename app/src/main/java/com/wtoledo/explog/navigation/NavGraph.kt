@@ -6,6 +6,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -14,8 +15,10 @@ import com.wtoledo.explog.views.ExpenseView
 import com.wtoledo.explog.viewModels.ExpensesListViewModel
 import com.wtoledo.explog.views.ExpensesListView
 import com.wtoledo.explog.viewModels.GraphViewModel
+import com.wtoledo.explog.viewModels.ScanExpViewModel
 import com.wtoledo.explog.views.GraphView
 import com.wtoledo.explog.views.HomeView
+import com.wtoledo.explog.views.ScanExpView
 
 @Composable
 fun NavGraph(
@@ -24,7 +27,11 @@ fun NavGraph(
     expensesListViewModel: ExpensesListViewModel,
     graphViewModel: GraphViewModel,
     modifier: Modifier = Modifier) {
-    NavHost(navController = navController, startDestination = NavRoutes.HOME.route, modifier = modifier) {
+    NavHost(
+        navController = navController,
+        startDestination = NavRoutes.HOME.route,
+        modifier = modifier
+    ) {
         composable(NavRoutes.EXPENSES.route) {
             ExpenseView(expenseViewModel = expenseViewModel , navController = navController)
         }
@@ -36,6 +43,10 @@ fun NavGraph(
         }
         composable(NavRoutes.GRAPH.route) {
             GraphView(graphViewModel = graphViewModel)
+        }
+        composable(NavRoutes.ScanExp.route) {
+            val scanExpViewModel: ScanExpViewModel = viewModel()
+            ScanExpView(scanExpViewModel = scanExpViewModel)
         }
     }
 }

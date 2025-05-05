@@ -10,6 +10,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material3.*
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowCircleLeft
 import androidx.compose.material.icons.filled.CropFree
 import androidx.compose.runtime.*
 import androidx.compose.runtime.getValue
@@ -30,6 +31,7 @@ import java.util.Date
 import java.util.Locale
 import com.wtoledo.explog.models.Category
 import androidx.navigation.NavController
+import com.wtoledo.explog.navigation.NavRoutes
 import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -64,35 +66,32 @@ fun ExpenseView(expenseViewModel: ExpenseViewModel, navController: NavController
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = { Text("Registro de Pago") },
+            CenterAlignedTopAppBar(
+                title = {
+                    Text(
+                        text = "Registro de Pago",
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                },
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(Icons.Filled.ArrowCircleLeft, contentDescription = "Back")
+                    }
+                },
                 actions = {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        IconButton(onClick = { navController.popBackStack() }) {
-                            Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
-                        }
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Button(onClick = {
-                            println("Botón 'Scan' clickeado")
-                        },
-                            modifier = Modifier.height(40.dp)) {
-                            Icon(
-                                imageVector = Icons.Filled.CropFree,
-                                contentDescription = "Scan"
-                            )
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Text(text = "Scan")
-                        }
+                    Button(onClick = {
+                        //println("Botón 'Scan' clickeado")
+                        navController.navigate(NavRoutes.ScanExp.route)
+                    }, modifier = Modifier.height(40.dp)) {
+                        Icon(
+                            imageVector = Icons.Filled.CropFree,
+                            contentDescription = "Scan"
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(text = "Scan")
                     }
                 }
-                /*navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.Filled.ArrowBack, contentDescription = "Back")
-                    }
-                }*/
-
             )
         },
         snackbarHost = { SnackbarHost(snackbarHostState) },
