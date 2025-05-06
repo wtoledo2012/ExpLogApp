@@ -46,7 +46,10 @@ fun NavGraph(
         }
         composable(NavRoutes.ScanExp.route) {
             val scanExpViewModel: ScanExpViewModel = viewModel()
-            ScanExpView(scanExpViewModel = scanExpViewModel)
+            ScanExpView(
+                expenseViewModel = expenseViewModel,
+                navController = navController,
+                scanExpViewModel = scanExpViewModel)
         }
     }
 }

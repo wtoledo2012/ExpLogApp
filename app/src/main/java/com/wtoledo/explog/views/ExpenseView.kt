@@ -5,11 +5,9 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.icons.Icons
 import androidx.compose.material3.*
 import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowCircleLeft
 import androidx.compose.material.icons.filled.CropFree
 import androidx.compose.runtime.*
@@ -21,11 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.wtoledo.explog.viewModels.ExpenseViewModel
 import androidx.compose.material3.rememberDatePickerState
-import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.unit.sp
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -38,7 +32,7 @@ import kotlinx.coroutines.delay
 @Composable
 fun ExpenseView(expenseViewModel: ExpenseViewModel, navController: NavController) {
     val expense by expenseViewModel.expense.observeAsState()
-    val categories = expenseViewModel.categories.observeAsState(initial = emptyList())
+    val categories by expenseViewModel.categories.observeAsState(initial = emptyList())
 
     var showDatePickerDialog by remember { mutableStateOf(false) }
     val datePickerState = rememberDatePickerState()
@@ -157,7 +151,7 @@ fun ExpenseView(expenseViewModel: ExpenseViewModel, navController: NavController
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        items(categories.value) { categoryItem ->
+                        items(categories) { categoryItem ->
                             CategoryIcon(
                                 category = categoryItem,
                                 isSelected = expense?.categoryId == categoryItem.id,

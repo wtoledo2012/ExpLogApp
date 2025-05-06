@@ -28,24 +28,35 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import com.google.firebase.crashlytics.FirebaseCrashlytics
+import com.wtoledo.explog.navigation.NavRoutes
+import com.wtoledo.explog.viewModels.ExpenseViewModel
 import com.wtoledo.explog.viewModels.ScanExpViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.io.File
 import java.util.concurrent.Executors
 import java.util.concurrent.ExecutorService
 
 @Composable
-fun ScanExpView(scanExpViewModel: ScanExpViewModel = viewModel()) {
+fun ScanExpView(
+    expenseViewModel: ExpenseViewModel,
+    navController: NavController,
+    scanExpViewModel: ScanExpViewModel = viewModel()) {
+
     var hasCameraPermission by remember { mutableStateOf(false) }
     var capturedBitmap by remember { mutableStateOf<Bitmap?>(null) }
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
     val cameraExecutor: ExecutorService = remember { Executors.newSingleThreadExecutor() }
-    val recognizedText by scanExpViewModel.recognizedText.observeAsState()
+    //val recognizedText by scanExpViewModel.recognizedText.observeAsState()
     val isProcessing by scanExpViewModel.isProcessing.observeAsState()
     val scannedAmount by scanExpViewModel.scannedAmount.observeAsState()
     val scannedDate by scanExpViewModel.scannedDate.observeAsState()
     val scannedName by scanExpViewModel.scannedName.observeAsState()
+    var isDataProcessed by remember { mutableStateOf(false) }
 
     val cameraProviderFuture = remember { ProcessCameraProvider.getInstance(context) }
     val previewView = remember { PreviewView(context) }
@@ -129,6 +140,22 @@ fun ScanExpView(scanExpViewModel: ScanExpViewModel = viewModel()) {
         FirebaseCrashlytics.getInstance().log("takePicture() finished")
     }
 
+    LaunchedEffect(key1 = isDataProcessed) {
+        if (isDataProcessed) {
+            expenseViewModel.updateAmount(scannedAmount ?: 0.0)
+            expenseViewModel.updateDate(scannedDate ?: "")
+            expenseViewModel.updateEstablishmentName(scannedName ?: "")
+            navController.popBackStack()
+            isDataProcessed = false
+        }
+    }
+
+    LaunchedEffect(scannedAmount, scannedDate, scannedName) {
+        if (scannedAmount != null && scannedDate != null && scannedName != null) {
+            isDataProcessed = true
+        }
+    }
+
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -153,20 +180,8 @@ fun ScanExpView(scanExpViewModel: ScanExpViewModel = viewModel()) {
         Spacer(modifier = Modifier.height(16.dp))
 
         if (isProcessing == true) {
+            Text(text = "Procesando...")
             CircularProgressIndicator()
-        } else {
-            if (recognizedText != null) {
-                Text(text = "Texto reconocido:\n$recognizedText")
-            }
-            if(scannedAmount != null){
-                Text(text = "Monto total reconocido:\n$scannedAmount")
-            }
-            if(scannedDate != null){
-                Text(text = "Fecha reconocida:\n$scannedDate")
-            }
-            if(scannedName != null){
-                Text(text = "Nombre del local:\n$scannedName")
-            }
         }
         Spacer(modifier = Modifier.height(16.dp))
         Button(onClick = {
@@ -174,8 +189,8 @@ fun ScanExpView(scanExpViewModel: ScanExpViewModel = viewModel()) {
             takePicture(hasCameraPermission, context, imageCapture, cameraExecutor) { bitmap ->
                 FirebaseCrashlytics.getInstance().log("onPictureTaken lambda started")
                 capturedBitmap = bitmap
-                FirebaseCrashlytics.getInstance().log("capturedBitmap updated")
                 scanExpViewModel.processImage(bitmap)
+
                 FirebaseCrashlytics.getInstance().log("processImage() called")
             }
             FirebaseCrashlytics.getInstance().log("Button Take Picture finished")

@@ -19,12 +19,11 @@ class ScanExpViewModel : ViewModel() {
     private val _isProcessing = MutableLiveData<Boolean>()
     val isProcessing: LiveData<Boolean> = _isProcessing
 
-    private val _scannedAmount = MutableLiveData<Double>()
+    val _scannedAmount = MutableLiveData<Double>()
     val scannedAmount: LiveData<Double> = _scannedAmount
-    private val _scannedDate = MutableLiveData<String>()
+    val _scannedDate = MutableLiveData<String>()
     val scannedDate: LiveData<String> = _scannedDate
-
-    private val _scannedName = MutableLiveData<String>()
+    val _scannedName = MutableLiveData<String>()
     val scannedName: LiveData<String> = _scannedName
 
     fun processImage(bitmap: Bitmap) {
@@ -95,14 +94,10 @@ class ScanExpViewModel : ViewModel() {
                 }
 
             }
-            // Check for Name of the establishment
             if(name.isEmpty()){
                 name = line.text.trim()
             }
         }
-        /*_scannedAmount.value = totalAmount
-        _scannedDate.value = date
-        _scannedName.value = name*/
         _scannedAmount.postValue(totalAmount)
         _scannedDate.postValue(date)
         _scannedName.postValue(name)

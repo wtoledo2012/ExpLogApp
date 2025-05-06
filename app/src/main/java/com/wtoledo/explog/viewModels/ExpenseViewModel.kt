@@ -76,15 +76,15 @@ class ExpenseViewModel : ViewModel() {
     }
 
     fun updateAmount(amount: Double) {
-        _expense.value = _expense.value?.copy(amount = amount)
+        _expense.postValue(_expense.value?.copy(amount = amount))
     }
 
     fun updateDate(date: String) {
-        _expense.value = _expense.value?.copy(date = date)
+        _expense.postValue(_expense.value?.copy(date = date))
     }
 
     fun updateEstablishmentName(name: String) {
-        _expense.value = _expense.value?.copy(localName = name)
+        _expense.postValue(_expense.value?.copy(localName = name))
     }
 
     fun updateCategory(category: String) {
