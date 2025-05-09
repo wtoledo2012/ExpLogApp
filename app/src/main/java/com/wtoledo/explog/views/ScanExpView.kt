@@ -102,6 +102,23 @@ fun ScanExpView(
             FirebaseCrashlytics.getInstance().log("cameraExecutor shutdown")
         }
     }
+
+    LaunchedEffect(key1 = isDataProcessed) {
+        if (isDataProcessed) {
+            expenseViewModel.updateAmount(scannedAmount ?: 0.0)
+            expenseViewModel.updateDate(scannedDate ?: "")
+            expenseViewModel.updateEstablishmentName(scannedName ?: "")
+            navController.popBackStack()
+            isDataProcessed = false
+        }
+    }
+
+    LaunchedEffect(scannedAmount, scannedDate, scannedName) {
+        if (scannedAmount != null && scannedDate != null && scannedName != null) {
+            isDataProcessed = true
+        }
+    }
+
     fun takePicture(
         hasCameraPermission: Boolean,
         context: android.content.Context,
@@ -138,22 +155,6 @@ fun ScanExpView(
             FirebaseCrashlytics.getInstance().log("hasCameraPermission is false")
         }
         FirebaseCrashlytics.getInstance().log("takePicture() finished")
-    }
-
-    LaunchedEffect(key1 = isDataProcessed) {
-        if (isDataProcessed) {
-            expenseViewModel.updateAmount(scannedAmount ?: 0.0)
-            expenseViewModel.updateDate(scannedDate ?: "")
-            expenseViewModel.updateEstablishmentName(scannedName ?: "")
-            navController.popBackStack()
-            isDataProcessed = false
-        }
-    }
-
-    LaunchedEffect(scannedAmount, scannedDate, scannedName) {
-        if (scannedAmount != null && scannedDate != null && scannedName != null) {
-            isDataProcessed = true
-        }
     }
 
     Column(

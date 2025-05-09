@@ -18,6 +18,8 @@ mlkitTR="19.0.1"
 cameraXVersion="1.3.0"
 concurrentFutures="1.2.0"
 guava="33.0.0-jre"
+retrofit="2.9.0"
+gson="2.10.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -52,6 +54,10 @@ androidx-camera-view = { group = "androidx.camera", name = "camera-view", versio
 concurrent-futures = { module = "androidx.concurrent:concurrent-futures", version.ref = "concurrentFutures"}
 
 google-guava = { module = "com.google.guava:guava", version.ref = "guava"}
+
+retrofit = { group = "com.squareup.retrofit2", name = "retrofit", version.ref = "retrofit" }
+converter-gson = { group = "com.squareup.retrofit2", name = "converter-gson", version.ref = "retrofit" }
+gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

@@ -75,4 +75,7 @@ dependencies {
     implementation(libs.androidx.camera.view)
     implementation(libs.concurrent.futures)
     implementation(libs.google.guava)
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
+    implementation(libs.gson)
 }
