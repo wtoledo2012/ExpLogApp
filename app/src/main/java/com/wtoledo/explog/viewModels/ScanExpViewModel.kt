@@ -1,21 +1,23 @@
 package com.wtoledo.explog.viewModels
 
 import android.graphics.Bitmap
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.google.mlkit.vision.common.InputImage
-import com.google.mlkit.vision.text.Text
-import com.google.mlkit.vision.text.TextRecognition
-import com.google.mlkit.vision.text.latin.TextRecognizerOptions
-import java.text.SimpleDateFormat
-import java.util.Locale
+import androidx.lifecycle.viewModelScope
+import com.wtoledo.explog.services.DocumentAiApi
+import kotlinx.coroutines.launch
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.OkHttpClient
+import okhttp3.RequestBody.Companion.toRequestBody
+import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import java.io.ByteArrayOutputStream
+import java.util.concurrent.TimeUnit
 
 class ScanExpViewModel : ViewModel() {
-
-    private val _recognizedText = MutableLiveData<String>()
-    val recognizedText: LiveData<String> = _recognizedText
-
     private val _isProcessing = MutableLiveData<Boolean>()
     val isProcessing: LiveData<Boolean> = _isProcessing
 
@@ -26,81 +28,75 @@ class ScanExpViewModel : ViewModel() {
     val _scannedName = MutableLiveData<String>()
     val scannedName: LiveData<String> = _scannedName
 
+    private val documentAiApi: DocumentAiApi
+
+    init {
+        // Para logear los request de RetroFit
+        val loggingInterceptor = HttpLoggingInterceptor().apply {
+            setLevel(HttpLoggingInterceptor.Level.BODY)
+        }
+
+        val okHttpClient = OkHttpClient.Builder()
+            .connectTimeout(30, TimeUnit.SECONDS)
+            .readTimeout(30, TimeUnit.SECONDS)
+            .writeTimeout(30, TimeUnit.SECONDS)
+            .addInterceptor(loggingInterceptor)
+            .build()
+
+        val retrofit = Retrofit.Builder()
+            .baseUrl("https://us-central1-expenseslog-48120.cloudfunctions.net/")
+            .client(okHttpClient)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+        documentAiApi = retrofit.create(DocumentAiApi::class.java)
+    }
+
     fun processImage(bitmap: Bitmap) {
         _isProcessing.postValue(true)
-        val recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
-        val image = InputImage.fromBitmap(bitmap, 0)
+        _scannedDate.postValue("")
+        _scannedAmount.postValue(0.0)
+        _scannedName.postValue("")
+        viewModelScope.launch {
+            try {
+                val byteArrayOutputStream = ByteArrayOutputStream()
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream)
+                val byteArray = byteArrayOutputStream.toByteArray()
+                val requestBody = byteArray.toRequestBody("image/jpeg".toMediaTypeOrNull())
+                Log.d("ScanExpViewModel", "Request body size: ${requestBody.contentLength()} bytes")
+                Log.d("ScanExpViewModel", "Request body media type: ${requestBody.contentType()}")
 
-        recognizer.process(image)
-            .addOnSuccessListener { visionText ->
-                _recognizedText.postValue(visionText.text)
-                extractData(visionText)
-                _isProcessing.postValue(false)
-            }
-            .addOnFailureListener { e ->
-                _recognizedText.postValue("Error: ${e.message}")
-                _isProcessing.postValue(false)
-            }
-    }
+                //enviando la image a la API de Cloud Functions
+                val response = documentAiApi.processImage(requestBody)
 
-    fun extractData(visionText: Text) {
-        var totalAmount = 0.0
-        var date = ""
-        var name = ""
-
-        val lines = visionText.textBlocks.flatMap { it.lines }
-
-        for (line in lines) {
-            // Verifica la cantidad
-            if (line.text.contains(Regex("(?i)(total)|(importe)|(monto)"))) {
-                val amountMatch = Regex("([\\d]+\\.[\\d]+)").find(line.text)
-                if (amountMatch != null) {
-                    totalAmount = amountMatch.value.toDoubleOrNull() ?: 0.0
-                }
-            }
-            //verifica la fecha
-            if (line.text.contains(Regex("\\d{2}[/-]\\d{2}[/-]\\d{2,4}")) || line.text.contains(Regex("\\d{4}[/-]\\d{2}[/-]\\d{2}"))){
-                val dateMatch = Regex("\\d{2}[/-]\\d{2}[/-]\\d{2,4}|\\d{4}[/-]\\d{2}[/-]\\d{2}").find(line.text)
-                if (dateMatch != null){
-                    var format = "dd/MM/yyyy"
-                    val dateValue = dateMatch.value
-                    if (dateValue.length == 8 || dateValue.length == 10) {
-                        if (dateValue.contains("/")) {
-                            if (dateValue.length == 8) {
-                                format = "dd/MM/yy"
-                            }
-                        } else if (dateValue.contains("-")){
-                            if (dateValue.length == 8) {
-                                format = "dd-MM-yy"
-                            } else if (dateValue.length == 10) {
-                                format = "dd-MM-yyyy"
-                            }
-                        } else {
-                            if (dateValue.length == 8) {
-                                format = "ddMMYYYY"
-                            } else if (dateValue.length == 10) {
-                                format = "yyyyMMdd"
-                            }
-                        }
-                        try {
-                            val dateFormat = SimpleDateFormat(format, Locale.getDefault())
-                            val correctFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-                            date = correctFormat.format(dateFormat.parse(dateValue)!!)
-                        } catch (e: Exception){
-                            println(e)
-                        }
+                if (response.isSuccessful) {
+                    val documentAiResponse = response.body()
+                    documentAiResponse?.let {
+                        // Extraer los valores de la respuesta
+                        _scannedAmount.postValue(it.scannedAmount ?: 0.0)
+                        _scannedDate.postValue(it.scannedDate ?: "")
+                        _scannedName.postValue(it.scannedName ?: "")
+                    } ?: run {
+                        Log.e("ScanExpViewModel", "API response body is null")
+                        _scannedDate.postValue("")
+                        _scannedAmount.postValue(0.0)
+                        _scannedName.postValue("")
                     }
-
+                } else {
+                    val errorBody = response.errorBody()?.string()
+                    Log.e("ScanExpViewModel", "API request failed: ${response.code()} - $errorBody")
+                    _scannedDate.postValue("")
+                    _scannedAmount.postValue(0.0)
+                    _scannedName.postValue("")
                 }
-
-            }
-            if(name.isEmpty()){
-                name = line.text.trim()
+            } catch (e: Exception) {
+                Log.e("ScanExpViewModel", "Error processing image", e)
+                _scannedDate.postValue("")
+                _scannedAmount.postValue(0.0)
+                _scannedName.postValue("")
+            } finally {
+                _isProcessing.postValue(false)
             }
         }
-        _scannedAmount.postValue(totalAmount)
-        _scannedDate.postValue(date)
-        _scannedName.postValue(name)
-
     }
+
 }

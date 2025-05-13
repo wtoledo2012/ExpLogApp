@@ -51,21 +51,24 @@ fun ScanExpView(
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
     val cameraExecutor: ExecutorService = remember { Executors.newSingleThreadExecutor() }
-    //val recognizedText by scanExpViewModel.recognizedText.observeAsState()
-    val isProcessing by scanExpViewModel.isProcessing.observeAsState()
-    val scannedAmount by scanExpViewModel.scannedAmount.observeAsState()
-    val scannedDate by scanExpViewModel.scannedDate.observeAsState()
-    val scannedName by scanExpViewModel.scannedName.observeAsState()
-    var isDataProcessed by remember { mutableStateOf(false) }
+
+    val isProcessing by scanExpViewModel.isProcessing.observeAsState(initial = false)
+    val scannedAmount by scanExpViewModel.scannedAmount.observeAsState(initial = 0.0)
+    val scannedDate by scanExpViewModel.scannedDate.observeAsState(initial = "")
+    val scannedName by scanExpViewModel.scannedName.observeAsState(initial = "")
+
+    // var isDataProcessed by remember { mutableStateOf(false) }
 
     val cameraProviderFuture = remember { ProcessCameraProvider.getInstance(context) }
     val previewView = remember { PreviewView(context) }
     val imageCapture = remember { ImageCapture.Builder().build() }
-    val cameraProvider = cameraProviderFuture.get()
-    val preview = Preview.Builder().build().also {
-        it.setSurfaceProvider(previewView.surfaceProvider)
+    val cameraProvider = remember(cameraProviderFuture) { cameraProviderFuture.get() }
+    val preview = remember(previewView) {
+        Preview.Builder().build().also {
+            it.setSurfaceProvider(previewView.surfaceProvider)
+        }
     }
-    val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
+    val cameraSelector = remember { CameraSelector.DEFAULT_BACK_CAMERA }
 
     val cameraPermissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
@@ -84,7 +87,7 @@ fun ScanExpView(
         }
 
     }
-    LaunchedEffect(hasCameraPermission) {
+    LaunchedEffect(hasCameraPermission, cameraProvider, lifecycleOwner, cameraSelector, preview, imageCapture) {
         if (hasCameraPermission) {
             try {
                 cameraProvider.unbindAll()
@@ -103,21 +106,26 @@ fun ScanExpView(
         }
     }
 
-    LaunchedEffect(key1 = isDataProcessed) {
-        if (isDataProcessed) {
-            expenseViewModel.updateAmount(scannedAmount ?: 0.0)
-            expenseViewModel.updateDate(scannedDate ?: "")
-            expenseViewModel.updateEstablishmentName(scannedName ?: "")
-            navController.popBackStack()
-            isDataProcessed = false
+    LaunchedEffect(isProcessing) {
+        if (isProcessing == false) {
+            FirebaseCrashlytics.getInstance().log("Processing finished. Checking for scanned data.")
+            if (scannedName.isNotEmpty() || scannedDate.isNotEmpty() || scannedAmount > 0.0) {
+                FirebaseCrashlytics.getInstance().log("Data processed, navigating back.")
+                expenseViewModel.updateAmount(scannedAmount)
+                expenseViewModel.updateDate(scannedDate)
+                expenseViewModel.updateEstablishmentName(scannedName)
+                navController.popBackStack()
+            } else {
+                FirebaseCrashlytics.getInstance().log("Processing finished but no data found.")
+            }
         }
     }
 
-    LaunchedEffect(scannedAmount, scannedDate, scannedName) {
-        if (scannedAmount != null && scannedDate != null && scannedName != null) {
-            isDataProcessed = true
-        }
-    }
+    // LaunchedEffect(scannedAmount, scannedDate, scannedName) {
+    //     if (scannedAmount != null && scannedDate != null && scannedName != null) {
+    //         isDataProcessed = true
+    //     }
+    // }
 
     fun takePicture(
         hasCameraPermission: Boolean,
@@ -140,10 +148,14 @@ fun ScanExpView(
                 object : ImageCapture.OnImageSavedCallback {
                     override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
                         FirebaseCrashlytics.getInstance().log("onImageSaved() started")
-                        val bitmap = android.graphics.BitmapFactory.decodeFile(outputFile.absolutePath)
-                        FirebaseCrashlytics.getInstance().log("Bitmap decoded")
-                        onPictureTaken(bitmap)
-                        FirebaseCrashlytics.getInstance().log("onPictureTaken() called")
+                        CoroutineScope(Dispatchers.IO).launch {
+                            val bitmap = android.graphics.BitmapFactory.decodeFile(outputFile.absolutePath)
+                            FirebaseCrashlytics.getInstance().log("Bitmap decoded")
+                            CoroutineScope(Dispatchers.Main).launch {
+                                onPictureTaken(bitmap)
+                                FirebaseCrashlytics.getInstance().log("onPictureTaken() called")
+                            }
+                        }
                     }
 
                     override fun onError(exception: ImageCaptureException) {

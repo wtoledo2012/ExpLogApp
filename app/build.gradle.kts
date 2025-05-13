@@ -74,8 +74,11 @@ dependencies {
     implementation(libs.androidx.camera.lifecycle)
     implementation(libs.androidx.camera.view)
     implementation(libs.concurrent.futures)
+    implementation(libs.androidx.lifecycle.livedata.ktx)
     implementation(libs.google.guava)
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
     implementation(libs.gson)
+    implementation(libs.okhttp)
+    implementation(libs.okhttp.login.int)
 }
