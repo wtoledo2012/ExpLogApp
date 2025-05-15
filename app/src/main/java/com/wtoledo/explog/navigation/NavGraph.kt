@@ -33,13 +33,18 @@ fun NavGraph(
         modifier = modifier
     ) {
         composable(NavRoutes.EXPENSES.route) {
-            ExpenseView(expenseViewModel = expenseViewModel , navController = navController)
+            ExpenseView(
+                expenseViewModel = expenseViewModel,
+                navController = navController)
         }
         composable(NavRoutes.EXPENSES_LIST.route) {
-            ExpensesListView(expensesListViewModel = expensesListViewModel, navController = navController, expenseViewModel = expenseViewModel)
+            ExpensesListView(
+                expensesListViewModel = expensesListViewModel,
+                navController = navController,
+                expenseViewModel = expenseViewModel)
         }
         composable(NavRoutes.HOME.route) {
-            HomeView()
+            HomeView(navController = navController)
         }
         composable(NavRoutes.GRAPH.route) {
             GraphView(graphViewModel = graphViewModel)
