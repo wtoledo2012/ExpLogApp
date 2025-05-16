@@ -83,13 +83,13 @@ class ScanExpViewModel : ViewModel() {
                     }
                 } else {
                     val errorBody = response.errorBody()?.string()
-                    Log.e("ScanExpViewModel", "API request failed: ${response.code()} - $errorBody")
+                    Log.e("ScanExpViewModel", "Solicitud de API falló: ${response.code()} - $errorBody")
                     _scannedDate.postValue("")
                     _scannedAmount.postValue(0.0)
                     _scannedName.postValue("")
                 }
             } catch (e: Exception) {
-                Log.e("ScanExpViewModel", "Error processing image", e)
+                Log.e("ScanExpViewModel", "Error procesando imagen", e)
                 _scannedDate.postValue("")
                 _scannedAmount.postValue(0.0)
                 _scannedName.postValue("")

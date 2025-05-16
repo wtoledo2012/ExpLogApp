@@ -18,7 +18,7 @@ val VeryLightMauve = Color(0xFFede0f7)
 val Lavender = Color(0xFFe0cfff)
 val YellowGreen = Color(0xFF93c97e)
 
-// Pastel Colors
+// colores pasteles para el grafico tipo pastel
 val PastelLightPurple = Color(0xFFE0BBE4)
 val PastelMediumPurple = Color(0xFF957DAD)
 val PastelPink = Color(0xFFD291BC)

@@ -53,22 +53,20 @@ class HomeViewModel : ViewModel() {
         viewModelScope.launch {
             try {
                 val calendar = Calendar.getInstance()
-                // Set calendar to the beginning of the current month
                 calendar.set(Calendar.DAY_OF_MONTH, 1)
                 calendar.set(Calendar.HOUR_OF_DAY, 0)
                 calendar.set(Calendar.MINUTE, 0)
                 calendar.set(Calendar.SECOND, 0)
                 calendar.set(Calendar.MILLISECOND, 0)
-                val startOfMonth = calendar.time
+                val startOfMonth = calendar.time // Fecha Ini
 
-                // Set calendar to the end of the current month
                 calendar.add(Calendar.MONTH, 1)
                 calendar.add(Calendar.DAY_OF_MONTH, -1)
                 calendar.set(Calendar.HOUR_OF_DAY, 23)
                 calendar.set(Calendar.MINUTE, 59)
                 calendar.set(Calendar.SECOND, 59)
                 calendar.set(Calendar.MILLISECOND, 999)
-                val endOfMonth = calendar.time
+                val endOfMonth = calendar.time // Fecha Fin
 
                 val startOfMonthString = firestoreDateFormat.format(startOfMonth)
                 val endOfMonthString = firestoreDateFormat.format(endOfMonth)
@@ -76,7 +74,6 @@ class HomeViewModel : ViewModel() {
                 Log.d("HomeViewModel", """startOfMonthString=$startOfMonthString""")
                 Log.d("HomeViewModel", """endOfMonthString=$endOfMonthString""")
 
-                // Configurar el listener en tiempo real
                 currentMonthListener = expensesRef
                     .whereGreaterThanOrEqualTo("date", startOfMonthString)
                     .whereLessThanOrEqualTo("date", endOfMonthString)
@@ -143,7 +140,7 @@ class HomeViewModel : ViewModel() {
                     .whereLessThanOrEqualTo("date", endOfPreviousMonthString)
                     .addSnapshotListener { querySnapshot, e ->
                         if (e != null) {
-                            Log.e("HomeViewModel", "Error listening for previous month expenses", e)
+                            Log.e("HomeViewModel", "Error en la escucha de gastos del mes anterior", e)
                             _isLoading.postValue(false)
                             return@addSnapshotListener
                         }
@@ -161,7 +158,7 @@ class HomeViewModel : ViewModel() {
 
             } catch (e: Exception) {
                 Log.e("HomeViewModel", "Error loading previous month expenses", e)
-                _isLoading.postValue(false) // Asegúrate de ocultar el indicador de carga general
+                _isLoading.postValue(false)
             }
         }
     }
