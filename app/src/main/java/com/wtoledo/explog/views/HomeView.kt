@@ -34,6 +34,9 @@ import androidx.compose.animation.core.tween
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import com.wtoledo.explog.ui.theme.ExpLogTheme
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
 
 @Composable
 fun HomeView(
@@ -100,7 +103,9 @@ fun HomeView(
                         // Composable de las Barras de Comparación
                         ExpenseComparisonBarChart(
                             currentMonthExpenses = currentMonthExpensesSum.toFloat(),
-                            previousMonthExpenses = previousMonthExpensesSum.toFloat()
+                            previousMonthExpenses = previousMonthExpensesSum.toFloat(),
+                            barColorCurrentMonth = MaterialTheme.colorScheme.primary, // Mauve
+                            barColorPreviousMonth = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
                         )
                     }
                 }
@@ -257,38 +262,40 @@ fun ExpenseComparisonBarChart(
     val currentMonthExpensesDouble = currentMonthExpenses.toDouble()
     val previousMonthExpensesDouble = previousMonthExpenses.toDouble()
 
-    // Calcular la diferencia y el porcentaje para la leyenda
     val difference = currentMonthExpensesDouble - previousMonthExpensesDouble
     val percentageDifference = if (previousMonthExpensesDouble != 0.0) {
         (difference / previousMonthExpensesDouble) * 100
     } else if (currentMonthExpensesDouble > 0) {
         100.0
     } else {
-        0.0 // Si ambos son 0
+        0.0
     }
 
     val differenceText = String.format("%.2f", difference)
     val percentageText = String.format("%.1f", percentageDifference)
 
-    // Determinar el color del texto de la diferencia
     val differenceColor = when {
-        difference > 0 -> Color.Red // Rojo si los gastos actuales son mayores
-        difference < 0 -> Color.Green // Verde si los gastos actuales son menores
-        else -> MaterialTheme.colorScheme.onSurface // Color por defecto si son iguales
+        difference > 0 -> MaterialTheme.colorScheme.error
+        difference < 0 -> Color(0xFF388E3C)
+        else -> MaterialTheme.colorScheme.onSurface
     }
+
+    // Obtener las abreviaturas de los meses actual y anterior
+    val calendar = Calendar.getInstance()
+    val currentMonthAbbreviation = SimpleDateFormat("MMM.", Locale.getDefault()).format(calendar.time)
+    calendar.add(Calendar.MONTH, -1)
+    val previousMonthAbbreviation = SimpleDateFormat("MMM.", Locale.getDefault()).format(calendar.time)
 
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            //.height(chartHeight + 30.dp)
-            .height(chartHeight + 4.dp + labelHeight + 8.dp + 30.dp)
+            .height(chartHeight + 4.dp + labelHeight + 4.dp + labelHeight + 8.dp + 50.dp)
             .padding(horizontal = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                //.height(chartHeight - 20.dp),
                 .height(chartHeight),
             horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.Bottom
@@ -300,14 +307,7 @@ fun ExpenseComparisonBarChart(
                         .width(barWidth)
                         .fillMaxHeight(animatedPreviousMonthHeightRatio)
                         .background(barColorPreviousMonth)
-                        //.weight(animatedPreviousMonthHeightRatio, fill = true)
                 )
-                /*Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = "Ant.",
-                    fontSize = 12.sp,
-                    color = MaterialTheme.colorScheme.onSurface
-                )*/
             }
 
             // Barra del Mes Actual
@@ -317,56 +317,71 @@ fun ExpenseComparisonBarChart(
                         .width(barWidth)
                         .fillMaxHeight(animatedCurrentMonthHeightRatio)
                         .background(barColorCurrentMonth)
-                        //.weight(animatedCurrentMonthHeightRatio, fill = true)
                 )
-                /*Spacer(modifier = Modifier.height(4.dp)) // Espacio entre la barra y el texto
-                Text(
-                    text = "Actual",
-                    fontSize = 12.sp,
-                    color = MaterialTheme.colorScheme.onSurface
-                )*/
             }
         }
         Spacer(modifier = Modifier.height(4.dp))
         Row(
-            modifier = Modifier.fillMaxWidth().height(labelHeight),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(labelHeight),
             horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.Top
         ) {
             Text(
-                text = "Ant.",
+                text = previousMonthAbbreviation,
                 fontSize = 12.sp,
                 color = MaterialTheme.colorScheme.onSurface,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.width(barWidth)
             )
             Text(
-                text = "Actual",
+                text = currentMonthAbbreviation,
                 fontSize = 12.sp,
                 color = MaterialTheme.colorScheme.onSurface,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.width(barWidth)
             )
         }
-
-        Spacer(modifier = Modifier.height(8.dp)) // Espacio entre las barras y la leyenda
-
+        Spacer(modifier = Modifier.height(4.dp))
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(labelHeight),
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            verticalAlignment = Alignment.Top
+        ) {
+            Text(
+                text = "$${String.format("%.2f", previousMonthExpensesDouble)}",
+                fontSize = 12.sp,
+                color = MaterialTheme.colorScheme.onSurface,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.width(barWidth)
+            )
+            Text(
+                text = "$${String.format("%.2f", currentMonthExpensesDouble)}",
+                fontSize = 12.sp,
+                color = MaterialTheme.colorScheme.onSurface,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.width(barWidth)
+            )
+        }
+        Spacer(modifier = Modifier.height(8.dp))
         // Leyenda de Diferencia y Porcentaje
         Text(
-            text = "$${differenceText} (${percentageText}%) vs Mes Anterior: $${String.format("%.2f", previousMonthExpensesDouble)}",
+            text = "$${differenceText} (${percentageText}%) vs Mes Anterior: $${String.format("%.2f",previousMonthExpensesDouble)}",
             color = differenceColor,
             fontSize = 14.sp,
             textAlign = TextAlign.Center,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth().height(labelHeight)
         )
     }
 }
 
-// Puedes añadir previews para visualizar el Composable del gráfico
 @Preview(showBackground = true)
 @Composable
 fun PreviewExpenseComparisonBarChart() {
-    ExpLogTheme { // Asegúrate de usar el tema de tu aplicación si tienes uno
+    ExpLogTheme {
         ExpenseComparisonBarChart(
             currentMonthExpenses = 1500.50f,
             previousMonthExpenses = 1200.75f
@@ -428,22 +443,3 @@ fun PreviewExpenseComparisonBarChartZeroCurrent() {
         )
     }
 }
-
-
-// Asegúrate de tener tu tema definido, por ejemplo:
-// En ui.theme/Theme.kt
-/*
-package com.wtoledo.explog.ui.theme
-
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.runtime.Composable
-
-@Composable
-fun ExpLogTheme(content: @Composable () -> Unit) {
-    MaterialTheme(
-        typography = MaterialTheme.typography,
-        shapes = MaterialTheme.shapes,
-        content = content
-    )
-}
-*/

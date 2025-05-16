@@ -30,7 +30,6 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.google.firebase.crashlytics.FirebaseCrashlytics
-import com.wtoledo.explog.navigation.NavRoutes
 import com.wtoledo.explog.viewModels.ExpenseViewModel
 import com.wtoledo.explog.viewModels.ScanExpViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -56,8 +55,6 @@ fun ScanExpView(
     val scannedAmount by scanExpViewModel.scannedAmount.observeAsState(initial = 0.0)
     val scannedDate by scanExpViewModel.scannedDate.observeAsState(initial = "")
     val scannedName by scanExpViewModel.scannedName.observeAsState(initial = "")
-
-    // var isDataProcessed by remember { mutableStateOf(false) }
 
     val cameraProviderFuture = remember { ProcessCameraProvider.getInstance(context) }
     val previewView = remember { PreviewView(context) }
@@ -120,12 +117,6 @@ fun ScanExpView(
             }
         }
     }
-
-    // LaunchedEffect(scannedAmount, scannedDate, scannedName) {
-    //     if (scannedAmount != null && scannedDate != null && scannedName != null) {
-    //         isDataProcessed = true
-    //     }
-    // }
 
     fun takePicture(
         hasCameraPermission: Boolean,

@@ -32,7 +32,6 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -127,7 +126,6 @@ fun CategoryExpenseTable(categoryExpenses: List<CategoryExpense>) {
                 fontWeight = FontWeight.ExtraBold
             )
         }
-        // Table Rows
         LazyColumn(modifier = Modifier.fillMaxWidth().border(1.dp, Color.Gray)) {
             items(categoryExpenses) { categoryExpense ->
                 CategoryExpenseItem(categoryExpense = categoryExpense)
@@ -212,7 +210,6 @@ fun PieChart(data: List<CategoryExpense>, modifier: Modifier = Modifier) {
                     radius = radius
                 )
             }
-            // Draw tooltip if a slice is selected
             selectedSlice?.let { index ->
                 drawTooltip(
                     center = center,
